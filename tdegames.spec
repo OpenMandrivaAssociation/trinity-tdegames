@@ -1,6 +1,6 @@
-#
-# Please submit bugfixes or comments via http://www.trinitydesktop.org/
-#
+%bcond clang 1
+%bcond avahi 1
+%bcond gamin 1
 
 # BUILD WARNING:
 #  Remove qt-devel and qt3-devel and any kde*-devel on your system !
@@ -11,6 +11,8 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
+%define pkg_rel 2
+
 %define tde_pkg tdegames
 %define tde_prefix /opt/trinity
 %define tde_bindir %{tde_prefix}/bin
@@ -25,31 +27,24 @@
 %define tde_tdeincludedir %{tde_includedir}/tde
 %define tde_tdelibdir %{tde_libdir}/trinity
 
-%if 0%{?mdkversion}
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
 %define _disable_rebuild_configure 1
-%endif
 
 # fixes error: Empty %files file …/debugsourcefiles.list
 %define _debugsource_template %{nil}
 
 %define tarball_name %{tde_pkg}-trinity
-%global toolchain %(readlink /usr/bin/cc)
 
 
 Name:			trinity-%{tde_pkg}
 Summary:		Trinity Desktop Environment - Games
 Version:		%{tde_version}
-Release:		%{?!preversion:1}%{?preversion:0_%{preversion}}%{?dist}
+Release:		%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
 
-%if 0%{?suse_version}
-License:	GPL-2.0+
-%else
 License:	GPLv2+
-%endif
 
 #Vendor:		Trinity Project
 #Packager:	Francois Andriot <francois.andriot@free.fr>
@@ -59,7 +54,21 @@ Prefix:			%{tde_prefix}
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
 Source1:		%{name}-rpmlintrc
 
-BuildRequires:  cmake make
+BuildSystem:    cmake
+BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
+BuildOption:    -DCMAKE_SKIP_RPATH=OFF
+BuildOption:    -DCMAKE_SKIP_INSTALL_RPATH=OFF
+BuildOption:    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
+BuildOption:    -DCMAKE_INSTALL_RPATH="%{tde_libdir}"
+BuildOption:    -DCMAKE_NO_BUILTIN_CHRPATH=ON
+BuildOption:    -DCMAKE_PROGRAM_PATH="%{tde_bindir}"
+BuildOption:    -DCMAKE_INSTALL_PREFIX=%{tde_prefix}
+BuildOption:    -DBIN_INSTALL_DIR=%{tde_bindir}
+BuildOption:    -DCONFIG_INSTALL_DIR="%{tde_confdir}"
+BuildOption:    -DINCLUDE_INSTALL_DIR=%{tde_tdeincludedir}
+BuildOption:    -DLIB_INSTALL_DIR=%{tde_libdir}
+BuildOption:    -DSHARE_INSTALL_PREFIX=%{tde_datadir}
+BuildOption:    -DBUILD_ALL="ON" -DWITH_ALL_OPTIONS="ON"
 
 BuildRequires:	trinity-arts-devel >= %{tde_epoch}:1.5.10
 BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
@@ -67,28 +76,21 @@ BuildRequires:	trinity-tdebase-devel >= %{tde_version}
 BuildRequires:	trinity-tdemultimedia-devel >= %{tde_version}
 
 BuildRequires:	trinity-tde-cmake >= %{tde_version}
-%if "%{?toolchain}" != "clang"
-BuildRequires:	gcc-c++
-%endif
+
+%{!?with_clang:BuildRequires:	gcc-c++}
+
 BuildRequires:	desktop-file-utils
 BuildRequires:	fdupes
 BuildRequires:	libtool
 
 # AVAHI support
-%if 0%{?rhel} >=5 || 0%{?fedora} || 0%{?mgaversion} || 0%{?mdkversion} || 0%{?suse_version}
-%define with_avahi 1
-BuildRequires:  pkgconfig(avahi-client)
-%endif
+%{?with_avahi:BuildRequires:  pkgconfig(avahi-client)}
 
 # IDN support
 BuildRequires:	pkgconfig(libidn)
 
 # GAMIN support
-#  Not on openSUSE.
-%if ( 0%{?rhel} && 0%{?rhel} <= 8 ) || ( 0%{?fedora} && 0%{?fedora} <= 33 ) || 0%{?mgaversion} || 0%{?mdkversion}
-%define with_gamin 1
-BuildRequires:	pkgconfig(gamin)
-%endif
+%{?with_gamin:BuildRequires:	pkgconfig(gamin)}
 
 # OPENSSL support
 BuildRequires:  pkgconfig(openssl)
@@ -98,16 +100,6 @@ BuildRequires:  pkgconfig(libacl)
 
 # ATTR support
 BuildRequires:  pkgconfig(libattr)
-
-# SUSE desktop files utility
-%if 0%{?suse_version}
-BuildRequires:	update-desktop-files
-%endif
-
-%if 0%{?opensuse_bs} && 0%{?suse_version}
-# for xdg-menu script
-BuildRequires:	brp-check-trinity
-%endif
 
 # GLIB2 support
 BuildRequires:	pkgconfig(glib-2.0)
@@ -1159,99 +1151,13 @@ This package is part of Trinity, and a component of the TDE games module.
 %{tde_datadir}/icons/hicolor/*/apps/tdefifteen.png
 %{tde_mandir}/man*/tdefifteen.*
 
-##########
-
-%if 0%{?suse_version} && 0%{?opensuse_bs} == 0
-%debug_package
-%endif
-
-##########
-
-
-%prep
-%autosetup -n %{tarball_name}-%{version}%{?preversion:~%{preversion}}
-
-
-%build
+%conf -p
 unset QTDIR QTINC QTLIB
 export PATH="%{tde_bindir}:${PATH}"
 export PKG_CONFIG_PATH="%{tde_libdir}/pkgconfig"
 
-# Specific path for RHEL4
-if [ -d "/usr/X11R6" ]; then
-  export RPM_OPT_FLAGS="${RPM_OPT_FLAGS} -I/usr/X11R6/include -L/usr/X11R6/%{_lib}"
-fi
 
-if ! rpm -E %%cmake|grep -e 'cd build\|cd ${CMAKE_BUILD_DIR:-build}'; then
-  %__mkdir_p build
-  cd build
-fi
-
-%cmake \
-  -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-  -DCMAKE_C_FLAGS="${RPM_OPT_FLAGS}" \
-  -DCMAKE_CXX_FLAGS="${RPM_OPT_FLAGS}" \
-  -DCMAKE_SKIP_RPATH=OFF \
-  -DCMAKE_SKIP_INSTALL_RPATH=OFF \
-  -DCMAKE_INSTALL_RPATH="%{tde_libdir}" \
-  -DCMAKE_NO_BUILTIN_CHRPATH=ON \
-  -DCMAKE_VERBOSE_MAKEFILE=ON \
-  -DCMAKE_PROGRAM_PATH="%{tde_bindir}" \
-  -DWITH_GCC_VISIBILITY=ON \
-  \
-  -DCMAKE_INSTALL_PREFIX=%{tde_prefix} \
-  -DBIN_INSTALL_DIR=%{tde_bindir} \
-  -DCONFIG_INSTALL_DIR="%{tde_confdir}" \
-  -DINCLUDE_INSTALL_DIR=%{tde_tdeincludedir} \
-  -DLIB_INSTALL_DIR=%{tde_libdir} \
-  -DSHARE_INSTALL_PREFIX=%{tde_datadir} \
-  \
-  -DBUILD_ALL="ON" \
-  -DWITH_ALL_OPTIONS="ON" \
-  ..
-
-%__make %{?_smp_mflags} || %__make
-
-
-%install
-export PATH="%{tde_bindir}:${PATH}"
-%__make install DESTDIR=%{?buildroot} -C build
-
-# Updates applications categories for openSUSE
-%if 0%{?suse_version}
-%suse_update_desktop_file -r kasteroids      Game ArcadeGame
-%suse_update_desktop_file -r KGoldrunner     Game ArcadeGame
-%suse_update_desktop_file -r ksnake          Game ArcadeGame
-%suse_update_desktop_file -r kspaceduel      Game ArcadeGame
-%suse_update_desktop_file -r ktron           Game ArcadeGame
-%suse_update_desktop_file -r kfouleggs       Game BlocksGame
-%suse_update_desktop_file -r ksirtet         Game BlocksGame
-%suse_update_desktop_file -r klickety        Game BoardGame
-%suse_update_desktop_file -r ksmiletris      Game BlocksGame
-%suse_update_desktop_file -r ktuberling      Game KidsGame
-%suse_update_desktop_file -r atlantik        Game BoardGame
-%suse_update_desktop_file -r kbackgammon     Game BoardGame
-%suse_update_desktop_file -r kbattleship     Game BoardGame
-%suse_update_desktop_file -r kblackbox       Game BoardGame
-%suse_update_desktop_file -r kenolaba        Game BoardGame
-%suse_update_desktop_file -r kmahjongg       Game BoardGame
-%suse_update_desktop_file -r kreversi        Game BoardGame
-%suse_update_desktop_file -r kshisen         Game BoardGame
-%suse_update_desktop_file -r twin4           Game BoardGame
-%suse_update_desktop_file -r kpat            Game CardGame
-%suse_update_desktop_file -r kpoker          Game CardGame
-%suse_update_desktop_file -r lskat           Game CardGame
-%suse_update_desktop_file -r katomic         Game LogicGame
-%suse_update_desktop_file -r kjumpingcube    Game LogicGame
-%suse_update_desktop_file -r klines          Game LogicGame
-%suse_update_desktop_file -r -G "Tactical Game" knetwalk Game LogicGame
-%suse_update_desktop_file -r kmines          Game LogicGame
-%suse_update_desktop_file -r konquest        Game LogicGame
-%suse_update_desktop_file -r ksame           Game LogicGame
-%suse_update_desktop_file -r ksokoban        Game LogicGame
-%suse_update_desktop_file -r kbounce         Game LogicGame
-%suse_update_desktop_file -r kolf            Game SportsGame
-%endif
+%install -a
 
 # Links duplicate files
 %fdupes "%{?buildroot}"
