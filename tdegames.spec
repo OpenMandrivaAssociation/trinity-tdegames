@@ -11,21 +11,11 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
-%define pkg_rel 2
+%define pkg_rel 3
 
 %define tde_pkg tdegames
 %define tde_prefix /opt/trinity
-%define tde_bindir %{tde_prefix}/bin
-%define tde_confdir %{_sysconfdir}/trinity
-%define tde_datadir %{tde_prefix}/share
-%define tde_docdir %{tde_datadir}/doc
-%define tde_includedir %{tde_prefix}/include
-%define tde_libdir %{tde_prefix}/%{_lib}
-%define tde_mandir %{tde_datadir}/man
-%define tde_tdeappdir %{tde_datadir}/applications/tde
-%define tde_tdedocdir %{tde_docdir}/tde
-%define tde_tdeincludedir %{tde_includedir}/tde
-%define tde_tdelibdir %{tde_libdir}/trinity
+
 
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
@@ -46,29 +36,19 @@ URL:			http://www.trinitydesktop.org/
 
 License:	GPLv2+
 
-#Vendor:		Trinity Project
-#Packager:	Francois Andriot <francois.andriot@free.fr>
-
-Prefix:			%{tde_prefix}
 
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
 Source1:		%{name}-rpmlintrc
 
 BuildSystem:    cmake
+
 BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
-BuildOption:    -DCMAKE_SKIP_RPATH=OFF
-BuildOption:    -DCMAKE_SKIP_INSTALL_RPATH=OFF
-BuildOption:    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
-BuildOption:    -DCMAKE_INSTALL_RPATH="%{tde_libdir}"
-BuildOption:    -DCMAKE_NO_BUILTIN_CHRPATH=ON
-BuildOption:    -DCMAKE_PROGRAM_PATH="%{tde_bindir}"
+BuildOption:    -DCMAKE_PROGRAM_PATH=%{tde_prefix}/bin
 BuildOption:    -DCMAKE_INSTALL_PREFIX=%{tde_prefix}
-BuildOption:    -DBIN_INSTALL_DIR=%{tde_bindir}
-BuildOption:    -DCONFIG_INSTALL_DIR="%{tde_confdir}"
-BuildOption:    -DINCLUDE_INSTALL_DIR=%{tde_tdeincludedir}
-BuildOption:    -DLIB_INSTALL_DIR=%{tde_libdir}
-BuildOption:    -DSHARE_INSTALL_PREFIX=%{tde_datadir}
-BuildOption:    -DBUILD_ALL="ON" -DWITH_ALL_OPTIONS="ON"
+BuildOption:    -DCONFIG_INSTALL_DIR=%{_sysconfdir}/trinity
+BuildOption:    -DINCLUDE_INSTALL_DIR=%{tde_prefix}/include/tde
+BuildOption:    -DBUILD_ALL=ON -DWITH_ALL_OPTIONS=ON
+BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
 
 BuildRequires:	trinity-arts-devel >= %{tde_epoch}:1.5.10
 BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
@@ -180,8 +160,8 @@ TDE desktop.
 
 %files devel
 %defattr(-,root,root,-)
-%{tde_datadir}/cmake/libtdegames.cmake
-%{tde_libdir}/pkgconfig/libtdegames.pc
+%{tde_prefix}/share/cmake/libtdegames.cmake
+%{tde_prefix}/%{_lib}/pkgconfig/libtdegames.pc
 
 ##########
 
@@ -199,12 +179,12 @@ This package is part of TDE, and a component of the TDE games module.
 
 %files -n trinity-libtdegames1
 %defattr(-,root,root,-)
-%{tde_libdir}/libtdegames.so.*
-%dir %{tde_datadir}/apps/tdegames
-%dir %{tde_datadir}/apps/tdegames/pics
-%{tde_datadir}/apps/tdegames/pics/star.png
-%{tde_datadir}/icons/crystalsvg/*/actions/roll.png
-%{tde_datadir}/icons/crystalsvg/*/actions/highscore.png
+%{tde_prefix}/%{_lib}/libtdegames.so.*
+%dir %{tde_prefix}/share/apps/tdegames
+%dir %{tde_prefix}/share/apps/tdegames/pics
+%{tde_prefix}/share/apps/tdegames/pics/star.png
+%{tde_prefix}/share/icons/crystalsvg/*/actions/roll.png
+%{tde_prefix}/share/icons/crystalsvg/*/actions/highscore.png
 
 ##########
 
@@ -221,10 +201,10 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-libtdegames-devel
 %defattr(-,root,root,-)
-%{tde_tdeincludedir}/*.h
-%{tde_tdeincludedir}/kgame
-%{tde_libdir}/libtdegames.so
-%{tde_libdir}/libtdegames.la
+%{tde_prefix}/include/tde/*.h
+%{tde_prefix}/include/tde/kgame
+%{tde_prefix}/%{_lib}/libtdegames.so
+%{tde_prefix}/%{_lib}/libtdegames.la
 
 ##########
 
@@ -239,7 +219,7 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files card-data
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/carddecks/
+%{tde_prefix}/share/apps/carddecks/
 
 ##########
 
@@ -258,18 +238,18 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-atlantik
 %defattr(-,root,root,-)
-%{tde_bindir}/atlantik
-%{tde_libdir}/libatlantic.so.*
-%{tde_libdir}/libatlantikclient.so.*
-%{tde_libdir}/libatlantikui.so.*
-%{tde_tdelibdir}/tdeio_atlantik.la
-%{tde_tdelibdir}/tdeio_atlantik.so
-%{tde_datadir}/services/atlantik.protocol
-%{tde_tdeappdir}/atlantik.desktop
-%{tde_datadir}/icons/hicolor/*/apps/atlantik.png
-%{tde_datadir}/apps/atlantik/
-%{tde_tdedocdir}/HTML/en/atlantik/
-%{tde_mandir}/man*/atlantik.*
+%{tde_prefix}/bin/atlantik
+%{tde_prefix}/%{_lib}/libatlantic.so.*
+%{tde_prefix}/%{_lib}/libatlantikclient.so.*
+%{tde_prefix}/%{_lib}/libatlantikui.so.*
+%{tde_prefix}/%{_lib}/trinity/tdeio_atlantik.la
+%{tde_prefix}/%{_lib}/trinity/tdeio_atlantik.so
+%{tde_prefix}/share/services/atlantik.protocol
+%{tde_prefix}/share/applications/tde/atlantik.desktop
+%{tde_prefix}/share/icons/hicolor/*/apps/atlantik.png
+%{tde_prefix}/share/apps/atlantik/
+%{tde_prefix}/share/doc/tde/HTML/en/atlantik/
+%{tde_prefix}/share/man/man*/atlantik.*
 
 ##########
 
@@ -286,14 +266,14 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-atlantik-devel
 %defattr(-,root,root,-)
-%{tde_tdeincludedir}/atlantik
-%{tde_tdeincludedir}/atlantic
-%{tde_libdir}/libatlantic.so
-%{tde_libdir}/libatlantic.la
-%{tde_libdir}/libatlantikclient.so
-%{tde_libdir}/libatlantikclient.la
-%{tde_libdir}/libatlantikui.so
-%{tde_libdir}/libatlantikui.la
+%{tde_prefix}/include/tde/atlantik
+%{tde_prefix}/include/tde/atlantic
+%{tde_prefix}/%{_lib}/libatlantic.so
+%{tde_prefix}/%{_lib}/libatlantic.la
+%{tde_prefix}/%{_lib}/libatlantikclient.so
+%{tde_prefix}/%{_lib}/libatlantikclient.la
+%{tde_prefix}/%{_lib}/libatlantikui.so
+%{tde_prefix}/%{_lib}/libatlantikui.la
 
 ##########
 
@@ -313,13 +293,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kasteroids
 %defattr(-,root,root,-)
-%{tde_bindir}/kasteroids
-%{tde_datadir}/icons/hicolor/*/apps/kasteroids.png
-%{tde_tdeappdir}/kasteroids.desktop
-%{tde_datadir}/apps/kasteroids/
-%{tde_datadir}/config.kcfg/kasteroids.kcfg
-%{tde_tdedocdir}/HTML/en/kasteroids/
-%{tde_mandir}/man*/kasteroids.*
+%{tde_prefix}/bin/kasteroids
+%{tde_prefix}/share/icons/hicolor/*/apps/kasteroids.png
+%{tde_prefix}/share/applications/tde/kasteroids.desktop
+%{tde_prefix}/share/apps/kasteroids/
+%{tde_prefix}/share/config.kcfg/kasteroids.kcfg
+%{tde_prefix}/share/doc/tde/HTML/en/kasteroids/
+%{tde_prefix}/share/man/man*/kasteroids.*
 
 ##########
 
@@ -337,12 +317,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-katomic
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/katomic/
-%{tde_datadir}/icons/hicolor/*/apps/katomic.png
-%{tde_tdeappdir}/katomic.desktop
-%{tde_bindir}/katomic
-%{tde_tdedocdir}/HTML/en/katomic/
-%{tde_mandir}/man*/katomic.*
+%{tde_prefix}/share/apps/katomic/
+%{tde_prefix}/share/icons/hicolor/*/apps/katomic.png
+%{tde_prefix}/share/applications/tde/katomic.desktop
+%{tde_prefix}/bin/katomic
+%{tde_prefix}/share/doc/tde/HTML/en/katomic/
+%{tde_prefix}/share/man/man*/katomic.*
 
 ##########
 
@@ -361,13 +341,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kbackgammon
 %defattr(-,root,root,-)
-%{tde_bindir}/kbackgammon
-%{tde_tdeappdir}/kbackgammon.desktop
-%{tde_datadir}/apps/kbackgammon/
-%{tde_datadir}/icons/hicolor/*/apps/kbackgammon.png
-%{tde_datadir}/icons/hicolor/*/apps/kbackgammon_engine.png
-%{tde_tdedocdir}/HTML/en/kbackgammon/
-%{tde_mandir}/man*/kbackgammon.*
+%{tde_prefix}/bin/kbackgammon
+%{tde_prefix}/share/applications/tde/kbackgammon.desktop
+%{tde_prefix}/share/apps/kbackgammon/
+%{tde_prefix}/share/icons/hicolor/*/apps/kbackgammon.png
+%{tde_prefix}/share/icons/hicolor/*/apps/kbackgammon_engine.png
+%{tde_prefix}/share/doc/tde/HTML/en/kbackgammon/
+%{tde_prefix}/share/man/man*/kbackgammon.*
 
 ##########
 
@@ -385,13 +365,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kbattleship
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kbattleship/
-%{tde_datadir}/apps/zeroconf/_kbattleship._tcp
-%{tde_datadir}/icons/hicolor/*/apps/kbattleship.png
-%{tde_tdeappdir}/kbattleship.desktop
-%{tde_bindir}/kbattleship
-%{tde_tdedocdir}/HTML/en/kbattleship/
-%{tde_mandir}/man*/kbattleship.*
+%{tde_prefix}/share/apps/kbattleship/
+%{tde_prefix}/share/apps/zeroconf/_kbattleship._tcp
+%{tde_prefix}/share/icons/hicolor/*/apps/kbattleship.png
+%{tde_prefix}/share/applications/tde/kbattleship.desktop
+%{tde_prefix}/bin/kbattleship
+%{tde_prefix}/share/doc/tde/HTML/en/kbattleship/
+%{tde_prefix}/share/man/man*/kbattleship.*
 
 ##########
 
@@ -411,12 +391,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kblackbox
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kblackbox/
-%{tde_datadir}/icons/hicolor/*/apps/kblackbox.png
-%{tde_tdeappdir}/kblackbox.desktop
-%{tde_bindir}/kblackbox
-%{tde_tdedocdir}/HTML/en/kblackbox/
-%{tde_mandir}/man*/kblackbox.*
+%{tde_prefix}/share/apps/kblackbox/
+%{tde_prefix}/share/icons/hicolor/*/apps/kblackbox.png
+%{tde_prefix}/share/applications/tde/kblackbox.desktop
+%{tde_prefix}/bin/kblackbox
+%{tde_prefix}/share/doc/tde/HTML/en/kblackbox/
+%{tde_prefix}/share/man/man*/kblackbox.*
 
 ##########
 
@@ -446,12 +426,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kbounce
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kbounce/
-%{tde_tdeappdir}/kbounce.desktop
-%{tde_datadir}/icons/hicolor/*/apps/kbounce.png
-%{tde_bindir}/kbounce
-%{tde_tdedocdir}/HTML/en/kbounce/
-%{tde_mandir}/man*/kbounce.*
+%{tde_prefix}/share/apps/kbounce/
+%{tde_prefix}/share/applications/tde/kbounce.desktop
+%{tde_prefix}/share/icons/hicolor/*/apps/kbounce.png
+%{tde_prefix}/bin/kbounce
+%{tde_prefix}/share/doc/tde/HTML/en/kbounce/
+%{tde_prefix}/share/man/man*/kbounce.*
 
 ##########
 
@@ -473,12 +453,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kenolaba
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kenolaba/
-%{tde_datadir}/icons/hicolor/*/apps/kenolaba.png
-%{tde_tdeappdir}/kenolaba.desktop
-%{tde_bindir}/kenolaba
-%{tde_tdedocdir}/HTML/en/kenolaba/
-%{tde_mandir}/man*/kenolaba.*
+%{tde_prefix}/share/apps/kenolaba/
+%{tde_prefix}/share/icons/hicolor/*/apps/kenolaba.png
+%{tde_prefix}/share/applications/tde/kenolaba.desktop
+%{tde_prefix}/bin/kenolaba
+%{tde_prefix}/share/doc/tde/HTML/en/kenolaba/
+%{tde_prefix}/share/man/man*/kenolaba.*
 
 ##########
 
@@ -496,13 +476,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kfouleggs
 %defattr(-,root,root,-)
-%{tde_tdeappdir}/kfouleggs.desktop
-%{tde_datadir}/apps/kfouleggs/
-%{tde_datadir}/config.kcfg/kfouleggs.kcfg
-%{tde_bindir}/kfouleggs
-%{tde_datadir}/icons/hicolor/*/apps/kfouleggs.png
-%{tde_tdedocdir}/HTML/en/kfouleggs/
-%{tde_mandir}/man*/kfouleggs.*
+%{tde_prefix}/share/applications/tde/kfouleggs.desktop
+%{tde_prefix}/share/apps/kfouleggs/
+%{tde_prefix}/share/config.kcfg/kfouleggs.kcfg
+%{tde_prefix}/bin/kfouleggs
+%{tde_prefix}/share/icons/hicolor/*/apps/kfouleggs.png
+%{tde_prefix}/share/doc/tde/HTML/en/kfouleggs/
+%{tde_prefix}/share/man/man*/kfouleggs.*
 
 ##########
 
@@ -530,12 +510,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kgoldrunner
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kgoldrunner/
-%{tde_datadir}/icons/hicolor/*/apps/kgoldrunner.png
-%{tde_tdeappdir}/KGoldrunner.desktop
-%{tde_bindir}/kgoldrunner
-%{tde_tdedocdir}/HTML/en/kgoldrunner/
-%{tde_mandir}/man*/kgoldrunner.*
+%{tde_prefix}/share/apps/kgoldrunner/
+%{tde_prefix}/share/icons/hicolor/*/apps/kgoldrunner.png
+%{tde_prefix}/share/applications/tde/KGoldrunner.desktop
+%{tde_prefix}/bin/kgoldrunner
+%{tde_prefix}/share/doc/tde/HTML/en/kgoldrunner/
+%{tde_prefix}/share/man/man*/kgoldrunner.*
 
 ##########
 
@@ -555,13 +535,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kjumpingcube
 %defattr(-,root,root,-)
-%{tde_bindir}/kjumpingcube
-%{tde_datadir}/icons/hicolor/*/apps/kjumpingcube.png
-%{tde_datadir}/apps/kjumpingcube/
-%{tde_tdeappdir}/kjumpingcube.desktop
-%{tde_datadir}/config.kcfg/kjumpingcube.kcfg
-%{tde_tdedocdir}/HTML/en/kjumpingcube/
-%{tde_mandir}/man*/kjumpingcube.*
+%{tde_prefix}/bin/kjumpingcube
+%{tde_prefix}/share/icons/hicolor/*/apps/kjumpingcube.png
+%{tde_prefix}/share/apps/kjumpingcube/
+%{tde_prefix}/share/applications/tde/kjumpingcube.desktop
+%{tde_prefix}/share/config.kcfg/kjumpingcube.kcfg
+%{tde_prefix}/share/doc/tde/HTML/en/kjumpingcube/
+%{tde_prefix}/share/man/man*/kjumpingcube.*
 
 ##########
 
@@ -577,13 +557,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-klickety
 %defattr(-,root,root,-)
-%{tde_bindir}/klickety
-%{tde_tdeappdir}/klickety.desktop
-%{tde_datadir}/icons/hicolor/*/apps/klickety.png
-%{tde_datadir}/icons/crystalsvg/*/actions/endturn.png
-%{tde_datadir}/apps/klickety/
-%{tde_tdedocdir}/HTML/en/klickety/
-%{tde_mandir}/man*/klickety.*
+%{tde_prefix}/bin/klickety
+%{tde_prefix}/share/applications/tde/klickety.desktop
+%{tde_prefix}/share/icons/hicolor/*/apps/klickety.png
+%{tde_prefix}/share/icons/crystalsvg/*/actions/endturn.png
+%{tde_prefix}/share/apps/klickety/
+%{tde_prefix}/share/doc/tde/HTML/en/klickety/
+%{tde_prefix}/share/man/man*/klickety.*
 
 ##########
 
@@ -608,13 +588,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-klines
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/klines/
-%{tde_tdeappdir}/klines.desktop
-%{tde_bindir}/klines
-%{tde_datadir}/config.kcfg/klines.kcfg
-%{tde_datadir}/icons/hicolor/*/apps/klines.png
-%{tde_tdedocdir}/HTML/en/klines/
-%{tde_mandir}/man*/klines.*
+%{tde_prefix}/share/apps/klines/
+%{tde_prefix}/share/applications/tde/klines.desktop
+%{tde_prefix}/bin/klines
+%{tde_prefix}/share/config.kcfg/klines.kcfg
+%{tde_prefix}/share/icons/hicolor/*/apps/klines.png
+%{tde_prefix}/share/doc/tde/HTML/en/klines/
+%{tde_prefix}/share/man/man*/klines.*
 
 ##########
 
@@ -631,13 +611,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kmahjongg
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kmahjongg/
-%{tde_datadir}/icons/hicolor/*/apps/kmahjongg.png
-%{tde_tdeappdir}/kmahjongg.desktop
-%{tde_bindir}/kmahjongg
-%{tde_datadir}/config.kcfg/kmahjongg.kcfg
-%{tde_tdedocdir}/HTML/en/kmahjongg/
-%{tde_mandir}/man*/kmahjongg.*
+%{tde_prefix}/share/apps/kmahjongg/
+%{tde_prefix}/share/icons/hicolor/*/apps/kmahjongg.png
+%{tde_prefix}/share/applications/tde/kmahjongg.desktop
+%{tde_prefix}/bin/kmahjongg
+%{tde_prefix}/share/config.kcfg/kmahjongg.kcfg
+%{tde_prefix}/share/doc/tde/HTML/en/kmahjongg/
+%{tde_prefix}/share/man/man*/kmahjongg.*
 
 ##########
 
@@ -659,12 +639,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kmines
 %defattr(-,root,root,-)
-%{tde_datadir}/icons/hicolor/*/apps/kmines.png
-%{tde_tdeappdir}/kmines.desktop
-%{tde_datadir}/apps/kmines/
-%{tde_bindir}/kmines
-%{tde_tdedocdir}/HTML/en/kmines/
-%{tde_mandir}/man*/kmines.*
+%{tde_prefix}/share/icons/hicolor/*/apps/kmines.png
+%{tde_prefix}/share/applications/tde/kmines.desktop
+%{tde_prefix}/share/apps/kmines/
+%{tde_prefix}/bin/kmines
+%{tde_prefix}/share/doc/tde/HTML/en/kmines/
+%{tde_prefix}/share/man/man*/kmines.*
 
 ##########
 
@@ -682,12 +662,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-knetwalk
 %defattr(-,root,root,-)
-%{tde_bindir}/knetwalk
-%{tde_datadir}/apps/knetwalk
-%{tde_datadir}/icons/hicolor/*/apps/knetwalk.png
-%{tde_tdeappdir}/knetwalk.desktop
-%{tde_tdedocdir}/HTML/en/knetwalk/
-%{tde_mandir}/man*/knetwalk.*
+%{tde_prefix}/bin/knetwalk
+%{tde_prefix}/share/apps/knetwalk
+%{tde_prefix}/share/icons/hicolor/*/apps/knetwalk.png
+%{tde_prefix}/share/applications/tde/knetwalk.desktop
+%{tde_prefix}/share/doc/tde/HTML/en/knetwalk/
+%{tde_prefix}/share/man/man*/knetwalk.*
 
 ##########
 
@@ -703,22 +683,22 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kolf
 %defattr(-,root,root,-)
-%config(noreplace) %{tde_confdir}/magic/kolf.magic
-%{tde_datadir}/apps/kolf/
-%{tde_bindir}/kolf
-%{tde_tdeappdir}/kolf.desktop
-%{tde_datadir}/icons/hicolor/*/apps/kolf.png
-%{tde_datadir}/mimelnk/application/x-kolf.desktop
-%{tde_datadir}/mimelnk/application/x-kourse.desktop
-%{tde_libdir}/libtdeinit_kolf.so
-%{tde_libdir}/libtdeinit_kolf.la
-%{tde_tdelibdir}/kolf.la
-%{tde_tdelibdir}/kolf.so
-%{tde_libdir}/libkolf.so.1
-%{tde_libdir}/libkolf.so.1.2.0
-%{tde_tdedocdir}/HTML/en/kolf/
-%config(noreplace) %{tde_confdir}/magic/kolf.magic.mgc
-%{tde_mandir}/man*/kolf.*
+%config(noreplace) %{_sysconfdir}/trinity/magic/kolf.magic
+%{tde_prefix}/share/apps/kolf/
+%{tde_prefix}/bin/kolf
+%{tde_prefix}/share/applications/tde/kolf.desktop
+%{tde_prefix}/share/icons/hicolor/*/apps/kolf.png
+%{tde_prefix}/share/mimelnk/application/x-kolf.desktop
+%{tde_prefix}/share/mimelnk/application/x-kourse.desktop
+%{tde_prefix}/%{_lib}/libtdeinit_kolf.so
+%{tde_prefix}/%{_lib}/libtdeinit_kolf.la
+%{tde_prefix}/%{_lib}/trinity/kolf.la
+%{tde_prefix}/%{_lib}/trinity/kolf.so
+%{tde_prefix}/%{_lib}/libkolf.so.1
+%{tde_prefix}/%{_lib}/libkolf.so.1.2.0
+%{tde_prefix}/share/doc/tde/HTML/en/kolf/
+%config(noreplace) %{_sysconfdir}/trinity/magic/kolf.magic.mgc
+%{tde_prefix}/share/man/man*/kolf.*
 
 ##########
 
@@ -735,9 +715,9 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kolf-devel
 %defattr(-,root,root,-)
-%{tde_tdeincludedir}/kolf
-%{tde_libdir}/libkolf.la
-%{tde_libdir}/libkolf.so
+%{tde_prefix}/include/tde/kolf
+%{tde_prefix}/%{_lib}/libkolf.la
+%{tde_prefix}/%{_lib}/libkolf.so
 
 ##########
 
@@ -754,12 +734,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-konquest
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/konquest/
-%{tde_datadir}/icons/hicolor/*/apps/konquest.png
-%{tde_tdeappdir}/konquest.desktop
-%{tde_bindir}/konquest
-%{tde_tdedocdir}/HTML/en/konquest/
-%{tde_mandir}/man*/konquest.*
+%{tde_prefix}/share/apps/konquest/
+%{tde_prefix}/share/icons/hicolor/*/apps/konquest.png
+%{tde_prefix}/share/applications/tde/konquest.desktop
+%{tde_prefix}/bin/konquest
+%{tde_prefix}/share/doc/tde/HTML/en/konquest/
+%{tde_prefix}/share/man/man*/konquest.*
 
 ##########
 
@@ -775,12 +755,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kpat
 %defattr(-,root,root,-)
-%{tde_datadir}/icons/hicolor/*/apps/kpat.png
-%{tde_datadir}/apps/kpat/
-%{tde_tdeappdir}/kpat.desktop
-%{tde_bindir}/kpat
-%{tde_tdedocdir}/HTML/en/kpat/
-%{tde_mandir}/man*/kpat.*
+%{tde_prefix}/share/icons/hicolor/*/apps/kpat.png
+%{tde_prefix}/share/apps/kpat/
+%{tde_prefix}/share/applications/tde/kpat.desktop
+%{tde_prefix}/bin/kpat
+%{tde_prefix}/share/doc/tde/HTML/en/kpat/
+%{tde_prefix}/share/man/man*/kpat.*
 
 ##########
 
@@ -796,12 +776,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kpoker
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kpoker/
-%{tde_datadir}/icons/hicolor/*/apps/kpoker.png
-%{tde_tdeappdir}/kpoker.desktop
-%{tde_bindir}/kpoker
-%{tde_tdedocdir}/HTML/en/kpoker/
-%{tde_mandir}/man*/kpoker.*
+%{tde_prefix}/share/apps/kpoker/
+%{tde_prefix}/share/icons/hicolor/*/apps/kpoker.png
+%{tde_prefix}/share/applications/tde/kpoker.desktop
+%{tde_prefix}/bin/kpoker
+%{tde_prefix}/share/doc/tde/HTML/en/kpoker/
+%{tde_prefix}/share/man/man*/kpoker.*
 
 ##########
 
@@ -821,17 +801,17 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kreversi
 %defattr(-,root,root,-)
-%{tde_bindir}/kreversi
-%{tde_tdeappdir}/kreversi.desktop
-%{tde_datadir}/apps/kreversi/
-%{tde_datadir}/config.kcfg/kreversi.kcfg
-%{tde_datadir}/icons/crystalsvg/*/actions/lastmoves.png
-%{tde_datadir}/icons/crystalsvg/*/actions/legalmoves.png
-%{tde_datadir}/icons/crystalsvg/scalable/actions/lastmoves.svgz
-%{tde_datadir}/icons/crystalsvg/scalable/actions/legalmoves.svgz
-%{tde_datadir}/icons/hicolor/*/apps/kreversi.png
-%{tde_tdedocdir}/HTML/en/kreversi/
-%{tde_mandir}/man*/kreversi.*
+%{tde_prefix}/bin/kreversi
+%{tde_prefix}/share/applications/tde/kreversi.desktop
+%{tde_prefix}/share/apps/kreversi/
+%{tde_prefix}/share/config.kcfg/kreversi.kcfg
+%{tde_prefix}/share/icons/crystalsvg/*/actions/lastmoves.png
+%{tde_prefix}/share/icons/crystalsvg/*/actions/legalmoves.png
+%{tde_prefix}/share/icons/crystalsvg/scalable/actions/lastmoves.svgz
+%{tde_prefix}/share/icons/crystalsvg/scalable/actions/legalmoves.svgz
+%{tde_prefix}/share/icons/hicolor/*/apps/kreversi.png
+%{tde_prefix}/share/doc/tde/HTML/en/kreversi/
+%{tde_prefix}/share/man/man*/kreversi.*
 
 ##########
 
@@ -849,12 +829,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-ksame
 %defattr(-,root,root,-)
-%{tde_bindir}/ksame
-%{tde_datadir}/icons/hicolor/*/apps/ksame.png
-%{tde_datadir}/apps/ksame/
-%{tde_tdeappdir}/ksame.desktop
-%{tde_tdedocdir}/HTML/en/ksame/
-%{tde_mandir}/man*/ksame.*
+%{tde_prefix}/bin/ksame
+%{tde_prefix}/share/icons/hicolor/*/apps/ksame.png
+%{tde_prefix}/share/apps/ksame/
+%{tde_prefix}/share/applications/tde/ksame.desktop
+%{tde_prefix}/share/doc/tde/HTML/en/ksame/
+%{tde_prefix}/share/man/man*/ksame.*
 
 ##########
 
@@ -872,13 +852,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kshisen
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kshisen/
-%{tde_datadir}/config.kcfg/kshisen.kcfg
-%{tde_datadir}/icons/hicolor/*/apps/kshisen.png
-%{tde_tdeappdir}/kshisen.desktop
-%{tde_bindir}/kshisen
-%{tde_tdedocdir}/HTML/en/kshisen/
-%{tde_mandir}/man*/kshisen.*
+%{tde_prefix}/share/apps/kshisen/
+%{tde_prefix}/share/config.kcfg/kshisen.kcfg
+%{tde_prefix}/share/icons/hicolor/*/apps/kshisen.png
+%{tde_prefix}/share/applications/tde/kshisen.desktop
+%{tde_prefix}/bin/kshisen
+%{tde_prefix}/share/doc/tde/HTML/en/kshisen/
+%{tde_prefix}/share/man/man*/kshisen.*
 
 ##########
 
@@ -900,13 +880,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-ksirtet
 %defattr(-,root,root,-)
-%{tde_tdeappdir}/ksirtet.desktop
-%{tde_datadir}/icons/hicolor/*/apps/ksirtet.png
-%{tde_datadir}/apps/ksirtet/
-%{tde_bindir}/ksirtet
-%{tde_datadir}/config.kcfg/ksirtet.kcfg
-%{tde_tdedocdir}/HTML/en/ksirtet/
-%{tde_mandir}/man*/ksirtet.*
+%{tde_prefix}/share/applications/tde/ksirtet.desktop
+%{tde_prefix}/share/icons/hicolor/*/apps/ksirtet.png
+%{tde_prefix}/share/apps/ksirtet/
+%{tde_prefix}/bin/ksirtet
+%{tde_prefix}/share/config.kcfg/ksirtet.kcfg
+%{tde_prefix}/share/doc/tde/HTML/en/ksirtet/
+%{tde_prefix}/share/man/man*/ksirtet.*
 
 ##########
 
@@ -923,12 +903,12 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-ksmiletris
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/ksmiletris/
-%{tde_datadir}/icons/hicolor/*/apps/ksmiletris.png
-%{tde_tdeappdir}/ksmiletris.desktop
-%{tde_bindir}/ksmiletris
-%{tde_tdedocdir}/HTML/en/ksmiletris/
-%{tde_mandir}/man*/ksmiletris.*
+%{tde_prefix}/share/apps/ksmiletris/
+%{tde_prefix}/share/icons/hicolor/*/apps/ksmiletris.png
+%{tde_prefix}/share/applications/tde/ksmiletris.desktop
+%{tde_prefix}/bin/ksmiletris
+%{tde_prefix}/share/doc/tde/HTML/en/ksmiletris/
+%{tde_prefix}/share/man/man*/ksmiletris.*
 
 ##########
 
@@ -944,13 +924,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-ksnake
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/ksnake/
-%{tde_datadir}/config.kcfg/ksnake.kcfg
-%{tde_datadir}/icons/hicolor/*/apps/ksnake.png
-%{tde_tdeappdir}/ksnake.desktop
-%{tde_bindir}/ksnake
-%{tde_tdedocdir}/HTML/en/ksnake/
-%{tde_mandir}/man*/ksnake.*
+%{tde_prefix}/share/apps/ksnake/
+%{tde_prefix}/share/config.kcfg/ksnake.kcfg
+%{tde_prefix}/share/icons/hicolor/*/apps/ksnake.png
+%{tde_prefix}/share/applications/tde/ksnake.desktop
+%{tde_prefix}/bin/ksnake
+%{tde_prefix}/share/doc/tde/HTML/en/ksnake/
+%{tde_prefix}/share/man/man*/ksnake.*
 
 ##########
 
@@ -982,11 +962,11 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-ksokoban
 %defattr(-,root,root,-)
-%{tde_tdeappdir}/ksokoban.desktop
-%{tde_datadir}/icons/hicolor/*/apps/ksokoban.png
-%{tde_bindir}/ksokoban
-%{tde_tdedocdir}/HTML/en/ksokoban/
-%{tde_mandir}/man*/ksokoban.*
+%{tde_prefix}/share/applications/tde/ksokoban.desktop
+%{tde_prefix}/share/icons/hicolor/*/apps/ksokoban.png
+%{tde_prefix}/bin/ksokoban
+%{tde_prefix}/share/doc/tde/HTML/en/ksokoban/
+%{tde_prefix}/share/man/man*/ksokoban.*
 
 ##########
 
@@ -1006,13 +986,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-kspaceduel
 %defattr(-,root,root,-)
-%{tde_datadir}/apps/kspaceduel/
-%{tde_datadir}/icons/hicolor/*/apps/kspaceduel.png
-%{tde_tdeappdir}/kspaceduel.desktop
-%{tde_bindir}/kspaceduel
-%{tde_datadir}/config.kcfg/kspaceduel.kcfg
-%{tde_tdedocdir}/HTML/en/kspaceduel/
-%{tde_mandir}/man*/kspaceduel.*
+%{tde_prefix}/share/apps/kspaceduel/
+%{tde_prefix}/share/icons/hicolor/*/apps/kspaceduel.png
+%{tde_prefix}/share/applications/tde/kspaceduel.desktop
+%{tde_prefix}/bin/kspaceduel
+%{tde_prefix}/share/config.kcfg/kspaceduel.kcfg
+%{tde_prefix}/share/doc/tde/HTML/en/kspaceduel/
+%{tde_prefix}/share/man/man*/kspaceduel.*
 
 ##########
 
@@ -1028,13 +1008,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-ktron
 %defattr(-,root,root,-)
-%{tde_bindir}/ktron
-%{tde_datadir}/icons/hicolor/*/apps/ktron.png
-%{tde_tdeappdir}/ktron.desktop
-%{tde_datadir}/apps/ktron/
-%{tde_datadir}/config.kcfg/ktron.kcfg
-%{tde_tdedocdir}/HTML/en/ktron/
-%{tde_mandir}/man*/ktron.*
+%{tde_prefix}/bin/ktron
+%{tde_prefix}/share/icons/hicolor/*/apps/ktron.png
+%{tde_prefix}/share/applications/tde/ktron.desktop
+%{tde_prefix}/share/apps/ktron/
+%{tde_prefix}/share/config.kcfg/ktron.kcfg
+%{tde_prefix}/share/doc/tde/HTML/en/ktron/
+%{tde_prefix}/share/man/man*/ktron.*
 
 ##########
 
@@ -1063,13 +1043,13 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-ktuberling
 %defattr(-,root,root,-)
-%{tde_bindir}/ktuberling
-%{tde_datadir}/icons/hicolor/*/apps/ktuberling.png
-%{tde_tdeappdir}/ktuberling.desktop
-%{tde_datadir}/apps/ktuberling/
-%{tde_datadir}/mimelnk/application/x-tuberling.desktop
-%{tde_tdedocdir}/HTML/en/ktuberling/
-%{tde_mandir}/man*/ktuberling.*
+%{tde_prefix}/bin/ktuberling
+%{tde_prefix}/share/icons/hicolor/*/apps/ktuberling.png
+%{tde_prefix}/share/applications/tde/ktuberling.desktop
+%{tde_prefix}/share/apps/ktuberling/
+%{tde_prefix}/share/mimelnk/application/x-tuberling.desktop
+%{tde_prefix}/share/doc/tde/HTML/en/ktuberling/
+%{tde_prefix}/share/man/man*/ktuberling.*
 
 ##########
 
@@ -1093,15 +1073,15 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-twin4
 %defattr(-,root,root,-)
-%{tde_bindir}/twin4
-%{tde_bindir}/twin4proc
-%{tde_datadir}/apps/twin4/
-%{tde_datadir}/config.kcfg/twin4.kcfg
-%{tde_datadir}/icons/hicolor/*/apps/twin4.png
-%{tde_tdeappdir}/twin4.desktop
-%{tde_tdedocdir}/HTML/en/twin4/
-%{tde_mandir}/man*/twin4.*
-%{tde_mandir}/man*/twin4proc.*
+%{tde_prefix}/bin/twin4
+%{tde_prefix}/bin/twin4proc
+%{tde_prefix}/share/apps/twin4/
+%{tde_prefix}/share/config.kcfg/twin4.kcfg
+%{tde_prefix}/share/icons/hicolor/*/apps/twin4.png
+%{tde_prefix}/share/applications/tde/twin4.desktop
+%{tde_prefix}/share/doc/tde/HTML/en/twin4/
+%{tde_prefix}/share/man/man*/twin4.*
+%{tde_prefix}/share/man/man*/twin4proc.*
 
 ##########
 
@@ -1123,14 +1103,14 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-lskat
 %defattr(-,root,root,-)
-%{tde_bindir}/lskat
-%{tde_bindir}/lskatproc
-%{tde_datadir}/apps/lskat/
-%{tde_datadir}/icons/hicolor/*/apps/lskat.png
-%{tde_tdeappdir}/lskat.desktop
-%{tde_tdedocdir}/HTML/en/lskat/
-%{tde_mandir}/man*/lskat.*
-%{tde_mandir}/man*/lskatproc.*
+%{tde_prefix}/bin/lskat
+%{tde_prefix}/bin/lskatproc
+%{tde_prefix}/share/apps/lskat/
+%{tde_prefix}/share/icons/hicolor/*/apps/lskat.png
+%{tde_prefix}/share/applications/tde/lskat.desktop
+%{tde_prefix}/share/doc/tde/HTML/en/lskat/
+%{tde_prefix}/share/man/man*/lskat.*
+%{tde_prefix}/share/man/man*/lskatproc.*
 
 ##########
 
@@ -1146,15 +1126,15 @@ This package is part of Trinity, and a component of the TDE games module.
 
 %files -n trinity-tdefifteen
 %defattr(-,root,root,-)
-%{tde_bindir}/tdefifteen
-%{tde_tdeappdir}/tdefifteen.desktop
-%{tde_datadir}/icons/hicolor/*/apps/tdefifteen.png
-%{tde_mandir}/man*/tdefifteen.*
+%{tde_prefix}/bin/tdefifteen
+%{tde_prefix}/share/applications/tde/tdefifteen.desktop
+%{tde_prefix}/share/icons/hicolor/*/apps/tdefifteen.png
+%{tde_prefix}/share/man/man*/tdefifteen.*
 
 %conf -p
 unset QTDIR QTINC QTLIB
-export PATH="%{tde_bindir}:${PATH}"
-export PKG_CONFIG_PATH="%{tde_libdir}/pkgconfig"
+export PATH="%{tde_prefix}/bin:${PATH}"
+export PKG_CONFIG_PATH="%{tde_prefix}/%{_lib}/pkgconfig"
 
 
 %install -a
