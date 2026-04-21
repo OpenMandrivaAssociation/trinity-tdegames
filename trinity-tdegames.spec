@@ -7,12 +7,6 @@
 #  Having KDE libraries may cause FTBFS here !
 
 # TDE variables
-%define tde_epoch 2
-%if "%{?tde_version}" == ""
-%define tde_version 14.1.5
-%endif
-%define pkg_rel 3
-
 %define tde_pkg tdegames
 %define tde_prefix /opt/trinity
 
@@ -29,15 +23,15 @@
 
 Name:			trinity-%{tde_pkg}
 Summary:		Trinity Desktop Environment - Games
-Version:		%{tde_version}
-Release:		%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
+Version:		14.1.5
+Release:		4
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
 
 License:	GPLv2+
 
 
-Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
+Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{version}/main/core/%{tarball_name}-%{version}.tar.xz
 Source1:		%{name}-rpmlintrc
 
 BuildSystem:    cmake
@@ -50,12 +44,12 @@ BuildOption:    -DINCLUDE_INSTALL_DIR=%{tde_prefix}/include/tde
 BuildOption:    -DBUILD_ALL=ON -DWITH_ALL_OPTIONS=ON
 BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
 
-BuildRequires:	trinity-arts-devel >= %{tde_epoch}:1.5.10
-BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
-BuildRequires:	trinity-tdebase-devel >= %{tde_version}
-BuildRequires:	trinity-tdemultimedia-devel >= %{tde_version}
+BuildRequires:	trinity-arts-devel >= 1.5.10
+BuildRequires:	trinity-tdelibs-devel >= %{version}
+BuildRequires:	trinity-tdebase-devel >= %{version}
+BuildRequires:	trinity-tdemultimedia-devel >= %{version}
 
-BuildRequires:	trinity-tde-cmake >= %{tde_version}
+BuildRequires:	trinity-tde-cmake >= %{version}
 
 %{!?with_clang:BuildRequires:	gcc-c++}
 
@@ -89,46 +83,46 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(ice)
 BuildRequires:  pkgconfig(sm)
 
-Obsoletes:		trinity-kdegames < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-kdegames = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:		trinity-kdegames-libs < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-kdegames-libs = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:		trinity-kdegames < %{EVRD}
+Provides:		trinity-kdegames = %{EVRD}
+Obsoletes:		trinity-kdegames-libs < %{EVRD}
+Provides:		trinity-kdegames-libs = %{EVRD}
 
-Requires: trinity-libtdegames1 = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-tdegames-card-data = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-atlantik = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kasteroids = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-katomic = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kbackgammon = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kbattleship = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kblackbox = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kbounce = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kenolaba = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kfouleggs = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kgoldrunner = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kjumpingcube = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-klickety = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-klines = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kmahjongg = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kmines = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-knetwalk = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kolf = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-konquest = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kpat = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kpoker = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kreversi = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-ksame = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kshisen = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-ksirtet = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-ksmiletris = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-ksnake = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-ksokoban = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-kspaceduel = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-ktron = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-ktuberling = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-twin4 = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-lskat = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: trinity-tdefifteen = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: trinity-libtdegames1 = %{EVRD}
+Requires: trinity-tdegames-card-data = %{EVRD}
+Requires: trinity-atlantik = %{EVRD}
+Requires: trinity-kasteroids = %{EVRD}
+Requires: trinity-katomic = %{EVRD}
+Requires: trinity-kbackgammon = %{EVRD}
+Requires: trinity-kbattleship = %{EVRD}
+Requires: trinity-kblackbox = %{EVRD}
+Requires: trinity-kbounce = %{EVRD}
+Requires: trinity-kenolaba = %{EVRD}
+Requires: trinity-kfouleggs = %{EVRD}
+Requires: trinity-kgoldrunner = %{EVRD}
+Requires: trinity-kjumpingcube = %{EVRD}
+Requires: trinity-klickety = %{EVRD}
+Requires: trinity-klines = %{EVRD}
+Requires: trinity-kmahjongg = %{EVRD}
+Requires: trinity-kmines = %{EVRD}
+Requires: trinity-knetwalk = %{EVRD}
+Requires: trinity-kolf = %{EVRD}
+Requires: trinity-konquest = %{EVRD}
+Requires: trinity-kpat = %{EVRD}
+Requires: trinity-kpoker = %{EVRD}
+Requires: trinity-kreversi = %{EVRD}
+Requires: trinity-ksame = %{EVRD}
+Requires: trinity-kshisen = %{EVRD}
+Requires: trinity-ksirtet = %{EVRD}
+Requires: trinity-ksmiletris = %{EVRD}
+Requires: trinity-ksnake = %{EVRD}
+Requires: trinity-ksokoban = %{EVRD}
+Requires: trinity-kspaceduel = %{EVRD}
+Requires: trinity-ktron = %{EVRD}
+Requires: trinity-ktuberling = %{EVRD}
+Requires: trinity-twin4 = %{EVRD}
+Requires: trinity-lskat = %{EVRD}
+Requires: trinity-tdefifteen = %{EVRD}
 
 
 %description
@@ -145,14 +139,14 @@ ksnake, ksirtet, katomic, kjumpingcube, ktuberling.
 Summary:	Development files for %{name} 
 Group:		Amusements/Games/Other
 
-Requires:	%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:	trinity-tdelibs-devel >= %{tde_version}
-Requires:	trinity-libtdegames-devel = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:	trinity-atlantik-devel = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:	trinity-kolf-devel = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	%{name} = %{EVRD}
+Requires:	trinity-tdelibs-devel >= %{version}
+Requires:	trinity-libtdegames-devel = %{EVRD}
+Requires:	trinity-atlantik-devel = %{EVRD}
+Requires:	trinity-kolf-devel = %{EVRD}
 
-Obsoletes:		trinity-kdegames-devel < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-kdegames-devel = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:		trinity-kdegames-devel < %{EVRD}
+Provides:		trinity-kdegames-devel = %{EVRD}
 
 %description devel
 Install %{name}-devel if you wish to develop or compile games for the
@@ -191,7 +185,7 @@ This package is part of TDE, and a component of the TDE games module.
 %package -n trinity-libtdegames-devel
 Summary:	Trinity games library headers
 Group:		Development/Libraries/Other
-Requires:	trinity-libtdegames1 = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	trinity-libtdegames1 = %{EVRD}
 
 %description -n trinity-libtdegames-devel
 This package is necessary if you want to develop your own games using
@@ -256,7 +250,7 @@ This package is part of Trinity, and a component of the TDE games module.
 %package -n trinity-atlantik-devel
 Summary:	Development files for Atlantik
 Group:		Development/Libraries/Other
-Requires:	trinity-atlantik = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	trinity-atlantik = %{EVRD}
 
 %description -n trinity-atlantik-devel
 This package contains header files for compiling programs against the
@@ -705,7 +699,7 @@ This package is part of Trinity, and a component of the TDE games module.
 %package -n trinity-kolf-devel
 Summary:	Development files for Kolf
 Group:		Development/Libraries/Other
-Requires:	trinity-kolf = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	trinity-kolf = %{EVRD}
 
 %description -n trinity-kolf-devel
 This package contains headers and development libraries for compiling
