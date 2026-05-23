@@ -16,15 +16,15 @@
 %define _disable_rebuild_configure 1
 
 # fixes error: Empty %files file …/debugsourcefiles.list
-%define _debugsource_template %{nil}
+%undefine _debugsource_template
 
 %define tarball_name %{tde_pkg}-trinity
 
 
 Name:			trinity-%{tde_pkg}
 Summary:		Trinity Desktop Environment - Games
-Version:		14.1.5
-Release:		4
+Version:		14.1.6
+Release:		1
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
 
@@ -44,7 +44,7 @@ BuildOption:    -DINCLUDE_INSTALL_DIR=%{tde_prefix}/include/tde
 BuildOption:    -DBUILD_ALL=ON -DWITH_ALL_OPTIONS=ON
 BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
 
-BuildRequires:	trinity-arts-devel >= 1.5.10
+BuildRequires:	trinity-arts-devel >= %{version}
 BuildRequires:	trinity-tdelibs-devel >= %{version}
 BuildRequires:	trinity-tdebase-devel >= %{version}
 BuildRequires:	trinity-tdemultimedia-devel >= %{version}
